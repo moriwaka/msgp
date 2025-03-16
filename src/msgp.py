@@ -225,7 +225,7 @@ def main():
     color_group = parser.add_mutually_exclusive_group()
     color_group.add_argument("--color", action="store_true", help="Force color highlighting on")
     color_group.add_argument("--nocolor", action="store_true", help="Force color highlighting off")
-    parser.add_argument("--score", type=float, default=0, help="Minimum score threshold for a candidate")
+    parser.add_argument("--score", type=float, default=1, help="Minimum score threshold for a candidate")
     parser.add_argument("--sort", action="store_true", help="Sort candidates by score (highest first)")
     parser.add_argument("-H", "--with-filename", action="store_true", help="Display filename on each matching line (suppress candidate summary)")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
