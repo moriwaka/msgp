@@ -108,6 +108,23 @@ def score_candidate(message_tokens, message_tokens_set, candidate_tokens):
             score += len(token) * 0.1
     return score
 
+def candidate_to_regex(literal):
+    """
+    フォーマット指定子（例：%s, %-06d, %10s）およびPython形式のフォーマット部（例：{}, {0:d}）を
+    .* に置き換えた正規表現パターンに変換する。
+    literalの他の部分は re.escape() でエスケープする。
+    """
+    placeholder = "____FMT____"
+    # % フォーマット指定子をプレースホルダーに置換
+    tmp = FMT_SPEC_RE.sub(placeholder, literal)
+    # Python形式のフォーマット部をプレースホルダーに置換（例：{} や {value}）
+    tmp = re.sub(r'\{[^}]*\}', placeholder, tmp)
+    # エスケープ
+    tmp = re.escape(tmp)
+    # プレースホルダー部分を .* に戻す
+    pattern = tmp.replace(re.escape(placeholder), ".*")
+    return pattern
+
 def process_file(filepath, message_tokens, message_tokens_set):
     """Process a single file and return matching string literal candidates."""
     results = []
@@ -128,12 +145,21 @@ def process_file(filepath, message_tokens, message_tokens_set):
     if args.debug:
         print(f"[DEBUG] Processing file: {filepath} with extractor: {extractor.__name__}, found {len(literals)} literals.", file=sys.stderr)
     for line, literal in literals:
-        # Remove format specifiers (e.g., %-06d, %10s)
+        # 既存のフォーマット指定子除去処理ではなく、候補文字列のフォーマット指定子を .* に置換した正規表現パターンに変換
+        pattern = candidate_to_regex(literal)
+        if not re.search(pattern, args.message):
+            if args.debug:
+                print(f"[DEBUG] Literal does not match message: {literal}", file=sys.stderr)
+            #continue
+            pass
+
+        # スコア算出には、元の処理と同様にフォーマット指定子を一旦除去して token 化
         clean_literal = FMT_SPEC_RE.sub('', literal)
         cand_tokens = tokenize(clean_literal)
         if args.debug:
             print(f"[DEBUG] File: {filepath} (line {line}):", file=sys.stderr)
             print(f"        Original literal: {literal}", file=sys.stderr)
+            print(f"        Pattern: {pattern}", file=sys.stderr)
             print(f"        Clean literal: {clean_literal}", file=sys.stderr)
             print(f"        Candidate tokens: {cand_tokens}", file=sys.stderr)
         if not cand_tokens:

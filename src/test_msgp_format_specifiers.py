@@ -18,7 +18,7 @@ class TestMsgpFormatSpecifiers(unittest.TestCase):
 #include <stdio.h>
 int main() {
     // The string literal contains format specifiers like %s and %d.
-    printf("min: %s, swap peak: %d", "ignored", 100);
+    printf("min: %s swap peak: %d", "ignored", 100);
     return 0;
 }
 ''')
@@ -29,7 +29,7 @@ int main() {
             f.write('''
 def show():
     # Using the old-style formatting operator
-    print("min: %s, swap peak: %f" % ("ignored", 100.0))
+    print("min: %s swap peak: %f" % ("ignored", 100.0))
     
 if __name__ == "__main__":
     show()
@@ -40,7 +40,7 @@ if __name__ == "__main__":
         with open(self.js_file, "w", encoding="utf-8") as f:
             f.write('''
 // In JavaScript, format specifiers are not standard but we include one for testing.
-console.log("min: %s, swap peak: %d");
+console.log("min: %s swap peak: %d");
 ''')
         
         # Assume msgp.py is located in the same directory as this test script.
