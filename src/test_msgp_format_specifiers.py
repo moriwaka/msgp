@@ -61,19 +61,19 @@ console.log("min: %s, swap peak: %d");
     def test_c_format_specifiers(self):
         """Test that msgp.py processes format specifiers correctly in a C file."""
         # We search for "swap peak" which should appear after removing format specifiers.
-        output = self.run_msgp("swap peak", additional_args=["--score", "1"])
+        output = self.run_msgp("Memory: 20.8G (min: 250M peak: 27G swap: 2.7G swap peak: 6.7G)", additional_args=["--score", "1"])
         self.assertIn("printf(", output, msg="C file candidate did not contain 'swap peak'.")
         # output = self.run_msgp("peat peak", additional_args=["--score", "1"])
         # self.assertNotIn("printf(", output, msg="C file candidate did not contain 'peat peak'.")
 
     def test_python_format_specifiers(self):
         """Test that msgp.py processes format specifiers correctly in a Python file."""
-        output = self.run_msgp("swap peak", additional_args=["--score", "1"])
+        output = self.run_msgp("Memory: 20.8G (min: 250M peak: 27G swap: 2.7G swap peak: 6.7G)", additional_args=["--score", "1"])
         self.assertIn("print(", output, msg="Python file candidate did not contain 'swap peak'.")
 
     def test_js_format_specifiers(self):
         """Test that msgp.py processes format specifiers correctly in a JavaScript file."""
-        output = self.run_msgp("swap peak", additional_args=["--score", "1"])
+        output = self.run_msgp("Memory: 20.8G (min: 250M peak: 27G swap: 2.7G swap peak: 6.7G)", additional_args=["--score", "1"])
         self.assertIn("console.log", output, msg="JavaScript file candidate did not contain 'swap peak'.")
 
 if __name__ == '__main__':
