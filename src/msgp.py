@@ -150,8 +150,7 @@ def process_file(filepath, message_tokens, message_tokens_set):
         if not re.search(pattern, args.message):
             if args.debug:
                 print(f"[DEBUG] Literal does not match message: {literal}", file=sys.stderr)
-            #continue
-            pass
+            continue
 
         # スコア算出には、元の処理と同様にフォーマット指定子を一旦除去して token 化
         clean_literal = FMT_SPEC_RE.sub('', literal)
