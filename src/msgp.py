@@ -98,8 +98,7 @@ def score_candidate(message_tokens, message_tokens_set, candidate_tokens):
         try:
             current_index = message_tokens.index(token, prev_index + 1)
         except ValueError:
-            prev_index = -1
-            continue
+            return 0
         prev_index = current_index
     score = 0.0
     for token in filtered:
