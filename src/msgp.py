@@ -125,6 +125,8 @@ def process_file(filepath, message_tokens, message_tokens_set):
         return results
 
     literals = extractor(content)
+    if getattr(args, "debug", False):
+        print(f"[DEBUG] Processing file: {filepath} with extractor: {extractor.__name__}, found {len(literals)} literals.")
     for line, literal in literals:
         # Remove format specifiers (e.g., %-06d, %10s)
         clean_literal = FMT_SPEC_RE.sub('', literal)
@@ -134,6 +136,8 @@ def process_file(filepath, message_tokens, message_tokens_set):
         if len(cand_tokens) == 1 and SINGLE_PERCENT_S_RE.fullmatch(cand_tokens[0]):
             continue
         score_val = score_candidate(message_tokens, message_tokens_set, cand_tokens)
+        if getattr(args, "debug", False):
+            print(f"[DEBUG] File: {filepath}, Line: {line}, Score: {score_val:.2f}")
         if score_val >= args.score:
             results.append({
                 'type': 'string',
@@ -214,11 +218,15 @@ def main():
     color_group = parser.add_mutually_exclusive_group()
     color_group.add_argument("--color", action="store_true", help="Force color highlighting on")
     color_group.add_argument("--nocolor", action="store_true", help="Force color highlighting off")
-    parser.add_argument("--score", type=float, default=0, help="Minimum score threshold for a candidate")
+    parser.add_argument("--score", type=float, default=1, help="Minimum score threshold for a candidate")
     parser.add_argument("--sort", action="store_true", help="Sort candidates by score (highest first)")
     parser.add_argument("-H", "--with-filename", action="store_true", help="Display filename on each matching line (suppress candidate summary)")
+    parser.add_argument("--debug", action="store_true", help="Enable debug output")
     global args
     args = parser.parse_args()
+
+    if getattr(args, "debug", False):
+        print(f"[DEBUG] Arguments: {args}")
 
     if args.C is not None:
         if args.A == 0:
@@ -233,6 +241,8 @@ def main():
         use_color = False
 
     message_tokens = tokenize(args.message)
+    if getattr(args, "debug", False):
+        print(f"[DEBUG] Tokenized message: {message_tokens}")
     message_tokens_set = set(message_tokens)
     candidates = []
     file_paths = []
@@ -240,6 +250,8 @@ def main():
         for file in files:
             if file.endswith(('.c', '.h', '.cpp', '.cc', '.py', '.js', '.jsx')):
                 file_paths.append(os.path.join(root, file))
+    if getattr(args, "debug", False):
+        print(f"[DEBUG] Found {len(file_paths)} candidate files.")
 
     max_workers = os.cpu_count() or 1
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -252,6 +264,8 @@ def main():
     candidates = [cand for cand in candidates if cand['score'] >= args.score]
     if args.sort:
         candidates.sort(key=lambda x: x['score'], reverse=True)
+    if getattr(args, "debug", False):
+        print(f"[DEBUG] Total candidates found: {len(candidates)}")
 
     file_cache = {}
     for cand in candidates:
