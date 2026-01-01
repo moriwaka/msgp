@@ -215,6 +215,8 @@ def print_with_context(candidate, context_before, context_after, print_line_numb
     end_index = min(len(file_lines), match_line_index + context_after + 1)
     for i in range(start_index, end_index):
         line_text = file_lines[i].rstrip()
+        if args.max_line_length > 0 and len(line_text) > args.max_line_length:
+            continue
         if use_color:
             if i == match_line_index and candidate['type'] == 'string':
                 line_text = highlight_candidate_in_line(line_text, candidate['content'])
@@ -252,6 +254,7 @@ def main():
     parser.add_argument("--sort", action="store_true", help="Sort candidates by score (highest first)")
     parser.add_argument("-H", "--with-filename", action="store_true", help="Display filename on each matching line (suppress candidate summary)")
     parser.add_argument("--debug", action="store_true", help="Enable debug output")
+    parser.add_argument("--max-line-length", type=int, default=200, help="Maximum line length to display (set to 0 or negative to disable)")
     global args
     args = parser.parse_args()
 
