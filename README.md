@@ -82,11 +82,14 @@ You can then run it directly:
 - `-H` or `--with-filename`  
   Display the filename for each matching line (and omit the summary header).
 
-- `--color`  
+- `--color`
   Force color highlighting on.
 
-- `--nocolor`  
+- `--nocolor`
   Force color highlighting off.
+
+- `--max-line-length <value>`
+  Do not display lines longer than the specified length (default: `200`). Set to `0` or a negative value to disable the limit.
 
 ## Examples
 
